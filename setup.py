@@ -46,13 +46,6 @@ class Build(build):
         build.run(self)
 
 
-class BuildInstall(install):
-    """Build yescrypt when installing from source."""
-
-    def run(self):
-        super().run()
-
-
 if __name__ == "__main__":
     with open("REQUIREMENTS") as f:
         required = f.read().splitlines()
@@ -82,7 +75,7 @@ if __name__ == "__main__":
         package_dir={"": "src"},
         package_data={"": ["yescrypt.bin"]},
         cmdclass={
-            "install": BuildInstall,
+            "install": install,
             "build": Build,
             "build_dynamic": Build,
             "bdist_wheel": BdistWheel,
