@@ -105,3 +105,4 @@ yescrypt-opt.o: $(SRC_DIR)/yescrypt-platform.c
 .PHONY: clean
 clean:
 	- $(CLEANUP)
+	rm -f $(TARGET_DIR)/yescrypt.bin
