@@ -49,22 +49,26 @@ Installing collected packages: pyescrypt
 Successfully installed pyescrypt-0.1.0
 ```
 ### Wheels
-Wheels are available for Windows and macOS (x86-64 only). Other platforms build from source with Make and GCC.
+Wheels are available for Windows and macOS. Other platforms build from source with Make and GCC.
 
-Note: The macOS wheel is compiled without AVX support, since Big Sur's Python3 can't execute it. Given yescrypt is explicitly designed not to benefit from registers wider than 128 bits, AVX is no loss.
+Note: The macOS x86-64 wheel is compiled without AVX support, since Big Sur's Python3 can't execute it. Given yescrypt is explicitly designed not to benefit from registers wider than 128 bits, AVX is no loss.
 
 (Presumably Big Sur's Python3 troubles with AVX are related to Rosetta. See the ["What Can't Be Translated"](https://developer.apple.com/documentation/apple-silicon/about-the-rosetta-translation-environment) section on the Rosetta page. The same binaries run without issue outside of Python.)
 
 ### Building from Source
 Building pyescrypt from source requires GCC or a compatible compiler and (GNU) Make, regardless of platform. On Windows, the [Winlibs](https://github.com/brechtsanders/winlibs_mingw) distribution of MinGW is an excellent option. 
 
-A GCC-like compiler is necessary because yescrypt makes liberal use of GCC preprocessor and C extensions that Microsoft's compiler doesn't support (#warning, restrict, etc.). Clang works, but not everywhere. The version that ships with macOS Big Sur for example is missing OpenMP support.
+A GCC-like compiler is necessary because yescrypt makes liberal use of GCC preprocessor and C extensions that Microsoft's compiler doesn't support (#warning, restrict, etc.). Clang works, but not everywhere. The version that ships with macOS Big Sur, for example, is missing OpenMP support.
 
-To build on macOS there are a few options, but the easiest is to `brew install gcc` and change the compiler to `gcc-11`, since GCC is otherwise just an alias for Clang. GCC gives you the option of static or dynamic builds.
+By default, pyescrypt statically links GOMP (GNU OpenMP) and its dependencies on Windows and macOS x86-64, since GOMP isn't automatically available on non-Linux platforms. Sometimes (e.g. the AWS Lambda Python 3.8 runtime) GOMP even gets left out of Linux, but finding a copy of libgomp.so is easy (whereas an `-fPIC`-compiled libgomp.a has to be built, along with *GCC in its entirety*), so GOMP isn't statically linked on Linux.
+
+#### macOS x86-64
+To build on macOS x86-64 there are a few options, but the easiest is to `brew install gcc` and change the compiler to `gcc-11`, since `gcc` is otherwise just an alias for Clang. GCC gives you the option of static or dynamic builds.
 
 You can also stick with Clang, `brew install libomp`, and change the makefile to use `libomp` instead of `libgomp`. Or you can `brew install llvm` for a more featureful Clang build, change the compiler, and also move to `libomp` (which comes packaged with LLVM).
 
-By default, pyescrypt statically links GOMP (GNU OpenMP) and its dependencies on Windows and macOS, since GOMP isn't automatically available on non-Linux platforms. Sometimes (e.g. the AWS Lambda Python 3.8 runtime) GOMP even gets left out of Linux, but finding a copy of libgomp.so is easy (whereas an `-fPIC`-compiled libgomp.a has to be built, along with *GCC in its entirety*), so GOMP isn't statically linked on Linux.
+#### macOS ARM
+On ARM macOS, neither GCC builds nor GOMP builds work, nor do builds using the included copy of Clang, which has removed support for `libomp`. Instead, `brew install llvm`, then `make static` or `make dynamic`, and the result will be a dynamically linked library using OpenMP. No makefile editing is necessary.
 
 
 ## License
@@ -85,4 +89,12 @@ Note that because pyescrypt links GOMP, GPL-licensed code is also included. Unle
 ## Useful Make Targets
 - `make static`: build binaries and link them statically
 - `make dynamic`: build binaries and link them dynamically
-- `make clean`: clear compiled object files
+- `make clean`: clear build products and intermediates
+
+
+## Version History
+- 0.2
+    - Add support for macOS ARM builds.
+
+- 0.1
+    - Initial release
