@@ -1,19 +1,19 @@
 ifneq ($(MAKECMDGOALS),clean)
-# Yescrypt makes liberal use of GCC preprocessor and C extensions that
-# Microsoft's compiler doesn't support  (#warning, restrict, etc.). Clang
-# supports them, but is generally brittle for the options we need across
-# platforms, so we prefer GCC everywhere.
+    # Yescrypt makes liberal use of GCC preprocessor and C extensions that
+    # Microsoft's compiler doesn't support  (#warning, restrict, etc.). Clang
+    # supports them, but is generally brittle for the options we need across
+    # platforms, so we prefer GCC everywhere.
 
-# LLVM's OMP has a simpler license (MIT) than GNU's GOMP (GPL), but as long as
-# we're using GCC in the normal way linking GOMP falls under the GCC Runtime
-# Library Exception. See:
-#     https://www.gnu.org/licenses/gcc-exception-3.1-faq.en.html
-# Static and dynamic linking are treated equally here.
-ifndef OMP_PATH
-$(warning WARNING: OMP_PATH not set, linker may not be able to find OpenMP)
-else
-OMP_PATH = -L"$(OMP_PATH)"
-endif
+    # LLVM's OMP has a simpler license (MIT) than GNU's GOMP (GPL), but as long
+    # as we're using GCC in the normal way linking GOMP falls under the GCC
+    # Runtime Library Exception. See
+    # https://www.gnu.org/licenses/gcc-exception-3.1-faq.en.html. Static and
+    # dynamic linking are treated equally here.
+    ifndef OMP_PATH
+        $(warning WARNING: OMP_PATH not set, linker may not be able to find OpenMP)
+    else
+        OMP_PATH = -L"$(OMP_PATH)"
+    endif
 endif
 
 SRC_DIR = src/yescrypt
@@ -24,20 +24,20 @@ OBJS = $(BUILD_DIR)/yescrypt-opt.o $(BUILD_DIR)/yescrypt-common.o \
 
 PLATFORM =
 ifeq ($(OS),Windows_NT)
-	PLATFORM = Windows
+    PLATFORM = Windows
 else
-	UNAME := $(shell uname)
-	ifeq ($(UNAME),Darwin)
-		PLATFORM = macOS
-	else
-		PLATFORM = Linux
-	endif
+    UNAME := $(shell uname)
+    ifeq ($(UNAME),Darwin)
+        PLATFORM = macOS
+    else
+        PLATFORM = Linux
+    endif
 endif
 
 ifeq ($(PLATFORM),Windows)
-	ARCH = x86_64
+    ARCH = x86_64
 else
-	ARCH := $(shell uname -m)
+    ARCH := $(shell uname -m)
 endif
 
 # Note: On macOS for ARM, this builds using a brew-installed version of clang.
@@ -45,43 +45,42 @@ endif
 # example, `make static CC=/opt/homebrew/opt/llvm/bin/clang`. v17.0.6 is known
 # to work.
 ifndef COMPILER
-$(warning WARNING: COMPILER not set, Make may not be able to find the compiler)
-COMPILER = gcc
-ifeq ($(PLATFORM),macOS)
-ifeq ($(ARCH),arm64)
-	COMPILER = /opt/homebrew/opt/llvm/bin/clang
-endif
-endif
+    $(warning WARNING: COMPILER not set, Make may not be able to find the compiler)
+    COMPILER = gcc
+    ifeq ($(PLATFORM),macOS)
+        ifeq ($(ARCH),arm64)
+            COMPILER = /opt/homebrew/opt/llvm/bin/clang
+        endif
+    endif
 endif
 
-CLEANUP = 
 ifeq ($(PLATFORM),Windows)
-	CLEANUP = del /f /Q "$(BUILD_DIR)\*"
+    CLEANUP = del /f /Q "$(BUILD_DIR)\*"
 else
-	CLEANUP = rm -f $(OBJS)
+    CLEANUP = rm -f $(OBJS)
 endif
 
 SIMD =
 ifeq ($(PLATFORM),macOS)
-	ifeq ($(ARCH),x86_64)
-		SIMD = -msse2
-	endif
+    ifeq ($(ARCH),x86_64)
+        SIMD = -msse2
+    endif
 else
-	SIMD = -mavx
+    SIMD = -mavx
 endif
 
 OMP = 
 ifeq ($(PLATFORM),Windows)
-	OMP = -static -lgomp
+    OMP = -static -lgomp
 else ifeq ($(PLATFORM),macOS)
-	ifeq ($(ARCH),x86_64)
-		OMP = -static -lgomp
-	endif
+    ifeq ($(ARCH),x86_64)
+        OMP = -static -lgomp
+    endif
 else
-# Ubuntu ships with non-fPIC GOMP, so passing `-l:libgomp.a` fails. This is
-# generally fine, since the only missing GOMP we've seen on Linux is Amazon's
-# Python 3.8 Lambda runtime.
-	OMP = -lgomp
+    # Ubuntu ships with non-fPIC GOMP, so passing `-l:libgomp.a` fails. This is
+    # generally fine, since the only missing GOMP we've seen on Linux is Amazon's
+    # Python 3.8 Lambda runtime.
+    OMP = -lgomp
 endif
 
 # Link GOMP statically when we can since it's not distributed with most systems.
