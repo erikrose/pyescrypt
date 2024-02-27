@@ -84,9 +84,11 @@ else
 endif
 
 # Link GOMP statically when we can since it's not distributed with most systems.
+.PHONY: static
 static: $(OBJS)
 	$(COMPILER) -shared -fPIC $(OBJS) $(OMP_PATH) -fopenmp $(OMP) -o $(TARGET_DIR)/yescrypt.bin
 
+.PHONY: dynamic
 dynamic: $(OBJS)
 	$(COMPILER) -shared -fPIC $(OBJS) $(OMP_PATH) -fopenmp -o $(TARGET_DIR)/yescrypt.bin
 
