@@ -4,6 +4,7 @@ import sys
 from distutils.command.build import build  # type: ignore
 
 from setuptools import find_packages, setup  # type: ignore
+from setuptools.command.develop import develop
 from setuptools.command.install import install  # type: ignore
 from wheel.bdist_wheel import bdist_wheel as _bdist_wheel  # type: ignore
 
@@ -43,7 +44,15 @@ class Build(build):
 
     def run(self):
         _build_source()
-        build.run(self)
+        super().run()
+
+
+class Develop(develop):
+    """Remember to build the DLL even when people use ``pip install -e``."""
+    
+    def run(self):
+        _build_source()
+        super().run()
 
 
 if __name__ == "__main__":
@@ -76,6 +85,7 @@ if __name__ == "__main__":
         package_data={"": ["yescrypt.bin"]},
         cmdclass={
             "install": install,
+            "develop": Develop,
             "build": Build,
             "build_dynamic": Build,
             "bdist_wheel": BdistWheel,
