@@ -68,7 +68,7 @@ To build on macOS x86-64 there are a few options, but the easiest is to `brew in
 You can also stick with Clang, `brew install libomp`, and change the makefile to use `libomp` instead of `libgomp`. Or you can `brew install llvm` for a more featureful Clang build, change the compiler, and also move to `libomp` (which comes packaged with LLVM).
 
 #### macOS ARM
-On ARM macOS, neither GCC builds nor GOMP builds work, nor do builds using the included copy of Clang, which has removed support for `libomp`. Instead, `brew install llvm`, then `make static` or `make dynamic`, and the result will be a dynamically linked library using OpenMP. No makefile editing is necessary.
+On ARM macOS, neither GCC builds nor GOMP builds work, nor do builds using the included copy of Clang, which has removed support for `libomp`. Instead, `brew install llvm`, then `make dynamic`, and the result will be a dynamically linked library using OpenMP. (Static builds haven't been figured out yet, so `brew install llvm` will be needed on users' machines as well.) No makefile editing is necessary.
 
 
 ## License
@@ -80,21 +80,21 @@ Note that because pyescrypt links GOMP, GPL-licensed code is also included. Unle
 
 
 ## Useful Setuptools Commands
-- `build`: build binaries and link them statically
-- `build_dynamic`: build binaries and link them dynamically
-- `bdist_wheel`: build binaries, link them statically, and package them in a wheel
-- `bdist_wheel_dynamic`: build binaries, link them dynamically, and package them in a wheel
+- `build`: Build binaries and link them statically
+- `build_dynamic`: Build binaries and link them dynamically
+- `bdist_wheel`: Build binaries, link them statically, and package them in a wheel
+- `bdist_wheel_dynamic`: Build binaries, link them dynamically, and package them in a wheel. This is what builds the ARM Mac wheels.
 
 
 ## Useful Make Targets
-- `make static`: build binaries and link them statically
-- `make dynamic`: build binaries and link them dynamically
-- `make clean`: clear build products and intermediates
+- `make static`: Build binaries and link them statically.
+- `make dynamic`: Build binaries and link them dynamically.
+- `make clean`: Clear build products and intermediates.
 
 
 ## Version History
 - 0.2
-    - Add support for macOS ARM builds.
+    - Add support for macOS ARM builds (dynamic only).
 
 - 0.1
     - Initial release

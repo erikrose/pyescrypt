@@ -2,6 +2,7 @@
 import subprocess
 import sys
 from distutils.command.build import build  # type: ignore
+from platform import machine, system
 
 from setuptools import find_packages, setup  # type: ignore
 from setuptools.command.develop import develop
@@ -32,10 +33,10 @@ class BdistWheel(_bdist_wheel):
         return python, abi, plat
 
 
-def _build_source() -> None:
+def _build_source(static_or_dynamic: str) -> None:
     if subprocess.call(["make", "clean"]) != 0:
         sys.exit(-1)
-    if subprocess.call(["make", _MAKE_TYPE]) != 0:
+    if subprocess.call(["make", static_or_dynamic]) != 0:
         sys.exit(-1)
 
 
@@ -43,15 +44,21 @@ class Build(build):
     """Clear any built binaries and rebuild with make."""
 
     def run(self):
-        _build_source()
+        _build_source(_MAKE_TYPE)
         super().run()
 
 
 class Develop(develop):
     """Remember to build the DLL even when people use ``pip install -e``."""
-    
+
     def run(self):
-        _build_source()
+        # macOS ARM static builds haven't been figured out yet, so, in order
+        # that develop builds may work at all on ARM Macs, implicitly do a
+        # dynamic build.
+        static_or_dynamic = ("dynamic" if (system() == "Darwin"
+                                           and machine() == "arm64")
+                             else _MAKE_TYPE)
+        _build_source(static_or_dynamic)
         super().run()
 
 

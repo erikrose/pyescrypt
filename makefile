@@ -73,9 +73,7 @@ OMP =
 ifeq ($(PLATFORM),Windows)
     OMP = -static -lgomp
 else ifeq ($(PLATFORM),macOS)
-    ifeq ($(ARCH),x86_64)
-        OMP = -static -lgomp
-    endif
+	OMP = -static -lgomp
 else
     # Ubuntu ships with non-fPIC GOMP, so passing `-l:libgomp.a` fails. This is
     # generally fine, since the only missing GOMP we've seen on Linux is Amazon's
