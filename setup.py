@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 import subprocess
 import sys
-from distutils.command.build import build  # type: ignore
+from distutils.command.build import build
 from platform import machine, system
 
 from setuptools import find_packages, setup  # type: ignore
-from setuptools.command.develop import develop
+from setuptools.command.develop import develop  # type: ignore
 from setuptools.command.install import install  # type: ignore
 from wheel.bdist_wheel import bdist_wheel as _bdist_wheel  # type: ignore
 
@@ -23,11 +23,11 @@ class BdistWheel(_bdist_wheel):
     the names are stateful and will prevent pip installing when incorrect.
     """
 
-    def finalize_options(self):
+    def finalize_options(self) -> None:
         _bdist_wheel.finalize_options(self)
         self.root_is_pure = False  # noqa
 
-    def get_tag(self):
+    def get_tag(self) -> tuple[str, str, str]:
         python, abi, plat = _bdist_wheel.get_tag(self)
         python, abi = "py3", "none"
         return python, abi, plat
@@ -43,7 +43,7 @@ def _build_source(static_or_dynamic: str) -> None:
 class Build(build):
     """Clear any built binaries and rebuild with make."""
 
-    def run(self):
+    def run(self) -> None:
         _build_source(_MAKE_TYPE)
         super().run()
 
@@ -51,13 +51,13 @@ class Build(build):
 class Develop(develop):
     """Remember to build the DLL even when people use ``pip install -e``."""
 
-    def run(self):
+    def run(self) -> None:
         # macOS ARM static builds haven't been figured out yet, so, in order
         # that develop builds may work at all on ARM Macs, implicitly do a
         # dynamic build.
-        static_or_dynamic = ("dynamic" if (system() == "Darwin"
-                                           and machine() == "arm64")
-                             else _MAKE_TYPE)
+        static_or_dynamic = (
+            "dynamic" if (system() == "Darwin" and machine() == "arm64") else _MAKE_TYPE
+        )
         _build_source(static_or_dynamic)
         super().run()
 
@@ -86,11 +86,12 @@ if __name__ == "__main__":
         author_email="coltblackmore+pyescrypt@gmail.com",
         install_requires=required,
         license="BSD",
-        url="https://https://github.com/0xcb/pyescrypt",
+        url="https://github.com/0xcb/pyescrypt",
         packages=find_packages("src"),
         package_dir={"": "src"},
-        package_data={"": ["yescrypt.bin"]},
+        package_data={"": ["yescrypt.bin", "py.typed"]},
         cmdclass={
+            # Build yescrypt when installing from source.
             "install": install,
             "develop": Develop,
             "build": Build,

@@ -13,7 +13,7 @@ from base64 import b64decode, b64encode
 from enum import Enum
 from json import JSONDecodeError
 from pathlib import Path
-from typing import Any, cast, Optional
+from typing import Any, Optional, cast
 
 from cffi import FFI  # type: ignore
 
@@ -149,7 +149,7 @@ class Yescrypt:
 
     def __init__(
         self,
-        n: int = 2 ** 16,
+        n: int = 2**16,
         r: int = 8,
         t: int = 0,
         p: int = 1,
@@ -214,7 +214,7 @@ class Yescrypt:
         is configured to use.
 
         Note that in `Mode.MCF` the Modular Crypt Format string contains a salt,
-         found in `settings`, and `hash_length` is fixed at 32.
+        found in `settings`, and `hash_length` is fixed at 32.
 
         :param password: A password to hash.
         :param salt: A salt for the hash. Required unless using `settings` with
@@ -296,7 +296,7 @@ class Yescrypt:
 
         In Mode.JSON the encoded arguments are checked against this Yescrypt
         instance and a special exception is raised if they don't match. This
-        shortcircuits hasing of `password` of entirely.
+        shortcircuits hashing of `password` of entirely.
 
         In Mode.MCF, the internal yescrypt library decodes the arguments from the
         MCF string and the comparison simply fails if they don't match, since a
@@ -376,8 +376,8 @@ def main() -> None:
     import time
 
     # All default settings.
-    hasher = Yescrypt(n=2 ** 16, r=8, p=1, mode=Mode.JSON)
-    for i in range(5):
+    hasher = Yescrypt(n=2**16, r=8, p=1, mode=Mode.JSON)
+    for _ in range(5):
         password = secrets.token_bytes(32)
         salt = secrets.token_bytes(32)
         start = time.time()
