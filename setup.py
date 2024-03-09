@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import subprocess
 import sys
-from distutils.command.build import build  # type: ignore
+from distutils.command.build import build
 
 from setuptools import find_packages, setup  # type: ignore
 from setuptools.command.install import install  # type: ignore
@@ -21,11 +21,11 @@ class BdistWheel(_bdist_wheel):
     the names are stateful and will prevent pip installing when incorrect.
     """
 
-    def finalize_options(self):
+    def finalize_options(self) -> None:
         _bdist_wheel.finalize_options(self)
         self.root_is_pure = False  # noqa
 
-    def get_tag(self):
+    def get_tag(self) -> tuple[str, str, str]:
         python, abi, plat = _bdist_wheel.get_tag(self)
         python, abi = "py3", "none"
         return python, abi, plat
@@ -41,16 +41,9 @@ def _build_source() -> None:
 class Build(build):
     """Clear any built binaries and rebuild with make."""
 
-    def run(self):
+    def run(self) -> None:
         _build_source()
         build.run(self)
-
-
-class BuildInstall(install):
-    """Build yescrypt when installing from source."""
-
-    def run(self):
-        super().run()
 
 
 if __name__ == "__main__":
@@ -82,7 +75,8 @@ if __name__ == "__main__":
         package_dir={"": "src"},
         package_data={"": ["yescrypt.bin", "py.typed"]},
         cmdclass={
-            "install": BuildInstall,
+            # Build yescrypt when installing from source.
+            "install": install,
             "build": Build,
             "build_dynamic": Build,
             "bdist_wheel": BdistWheel,
