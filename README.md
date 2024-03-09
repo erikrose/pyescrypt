@@ -58,7 +58,7 @@ Note: The macOS x86-64 wheel is compiled without AVX support, since Big Sur's Py
 ### Building from Source
 Building pyescrypt from source requires GCC or a compatible compiler and (GNU) Make, regardless of platform. On Windows, the [Winlibs](https://github.com/brechtsanders/winlibs_mingw) distribution of MinGW is an excellent option. 
 
-A GCC-like compiler is necessary because yescrypt makes liberal use of GCC preprocessor and C extensions that Microsoft's compiler doesn't support (#warning, restrict, etc.). Clang works, but not everywhere. The version that ships with macOS Big Sur, for example, is missing OpenMP support.
+A GCC-like compiler is necessary because yescrypt makes liberal use of GCC preprocessor and C extensions that Microsoft's compiler doesn't support (#warning, restrict, etc.). Clang works, but not everywhere. The version that ships with macOS Big Sur for example is missing OpenMP support.
 
 By default, pyescrypt statically links GOMP (GNU OpenMP) and its dependencies on Windows and macOS x86-64, since GOMP isn't automatically available on non-Linux platforms. Sometimes (e.g. the AWS Lambda Python 3.8 runtime) GOMP even gets left out of Linux, but finding a copy of libgomp.so is easy (whereas an `-fPIC`-compiled libgomp.a has to be built, along with *GCC in its entirety*), so GOMP isn't statically linked on Linux.
 
@@ -80,9 +80,9 @@ Note that because pyescrypt links GOMP, GPL-licensed code is also included. Unle
 
 
 ## Useful Setuptools Commands
-- `build`: Build binaries and link them statically
-- `build_dynamic`: Build binaries and link them dynamically
-- `bdist_wheel`: Build binaries, link them statically, and package them in a wheel
+- `build`: Build binaries and link them statically.
+- `build_dynamic`: Build binaries and link them dynamically.
+- `bdist_wheel`: Build binaries, link them statically, and package them in a wheel.
 - `bdist_wheel_dynamic`: Build binaries, link them dynamically, and package them in a wheel. This is what builds the ARM Mac wheels.
 
 
@@ -93,8 +93,8 @@ Note that because pyescrypt links GOMP, GPL-licensed code is also included. Unle
 
 
 ## Version History
-- 0.2
-    - Add support for macOS ARM builds (dynamic only).
+- 2024-03-8
+    - Added support for macOS ARM builds (dynamic only). A macOS ARM wheel is now available for v0.1. (Thanks to @erikrose!)
 
 - 0.1
-    - Initial release
+    - Initial release.
