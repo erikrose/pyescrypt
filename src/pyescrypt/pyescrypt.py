@@ -120,8 +120,8 @@ try:
 except OSError as exc:
     if "/opt/homebrew/opt/llvm/lib/libomp.dylib" in exc.args[0]:
         raise FileNotFoundError(
-            exc.errno,
-            'OpenMP library not found. Please "brew install llvm".')
+            exc.errno, 'OpenMP library not found. Please "brew install llvm".'
+        )
 
 
 class Mode(Enum):
