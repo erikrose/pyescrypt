@@ -371,7 +371,7 @@ def main() -> None:
 
     # All default settings.
     hasher = Yescrypt(n=2**16, r=8, p=1, mode=Mode.JSON)
-    for i in range(5):
+    for _ in range(5):
         password = secrets.token_bytes(32)
         salt = secrets.token_bytes(32)
         start = time.time()
