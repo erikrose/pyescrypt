@@ -80,7 +80,7 @@ if __name__ == "__main__":
         url="https://github.com/0xcb/pyescrypt",
         packages=find_packages("src"),
         package_dir={"": "src"},
-        package_data={"": ["yescrypt.bin"]},
+        package_data={"": ["yescrypt.bin", "py.typed"]},
         cmdclass={
             "install": BuildInstall,
             "build": Build,
